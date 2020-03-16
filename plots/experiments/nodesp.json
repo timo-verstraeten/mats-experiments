@@ -1,0 +1,59 @@
+{
+    "folder": "./nodesp",
+    "experiments": [
+            {
+                "name": "nodesp",
+                "global_parameters" : [{
+                    "experiments": 100,
+                    "timesteps": 10000,
+                    "nodes": 10
+                }],
+                "algorithms": [
+                    {
+                        "name": "rnd",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "thompson",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "thompsonp",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "mauce",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {
+                              "ranges": [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0]
+                            }
+                        }]
+                    },
+                    {
+                        "name": "scql",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "llr",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    }
+                ]
+            }
+    ]
+}

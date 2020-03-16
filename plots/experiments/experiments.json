@@ -1,0 +1,191 @@
+{
+    "folder": "./results",
+    "experiments": [
+            {
+                "name": "nodes",
+                "global_parameters" : [{
+                    "experiments": 100,
+                    "timesteps": 10000,
+                    "nodes": 10
+                }],
+                "algorithms": [
+                    {
+                        "name": "rnd",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "llr",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "mauce",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "thompson",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "thompsonb",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    },
+                    {
+                        "name": "scql",
+                        "configs": [{
+                            "priority": 0,
+                            "parameters": {}
+                        }]
+                    }
+                ]
+            },
+            {
+                "name": "mines",
+                "global_parameters" : [{
+                    "timesteps": 40000,
+                    "experiments": 100,
+                    "seed": [1,2,3,1000,10000]
+                }],
+                "algorithms" : [
+                    {
+                        "name": "rnd",
+                        "configs": [
+                            {
+                                "priority": 1,
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "mauce",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "llr",
+                        "configs": [
+                            {
+                                "priority": 1,
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "scql",
+                        "configs": [
+                            {
+                                "priority": 1,
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "thompson",
+                        "configs": [
+                            {
+                                "priority": 1,
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "thompsonb",
+                        "configs": [
+                            {
+                                "priority": 1,
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "wind",
+                "global_parameters" : [{
+                    "timesteps": 2000,
+                    "experiments": 1
+                }],
+                "algorithms" : [
+                    {
+                        "name": "rnd",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": { "seed": 1 }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "llr",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "scql",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {
+                                    "epsilon": [0.1],
+                                    "zeroeps": [10000, 20000, 60000]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "mauce",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {
+                                    "range": [0.03]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "thompson",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {}
+                            }
+                        ]
+                    }
+                ]
+            }
+    ]
+}

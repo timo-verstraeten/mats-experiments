@@ -1,0 +1,71 @@
+{
+    "farm": {
+        "type": "farm",
+        "name": "farm_example",
+        "description": "Example Wind Farm",
+        "properties": {
+            "wind_speed": 8.1,
+            "wind_direction": 270,
+            "turbulence_intensity": 0.1,
+            "wind_shear": 0.12,
+            "wind_veer": 0.0,
+            "air_density": 1.1716,
+            "wake_combination": "sosfs",
+            "layout_x": [],
+            "layout_y": []
+        }
+    },
+    "turbines": [],
+    "wake": {
+        "type": "wake",
+        "name": "wake_default",
+        "description": "wake",
+        "properties": {
+            "velocity_model": "gauss",
+            "deflection_model": "gauss_deflection",
+            "parameters": {
+                "turbulence_intensity": {
+                    "initial": 0.1,
+                    "constant": 0.73,
+                    "ai": 0.8,
+                    "downstream": -0.275
+                },
+                "jensen": {
+                    "we": 0.05
+                },
+                "floris": {
+                    "me": [-0.05,
+                        0.3,
+                        1.0
+                    ],
+                    "aU": 12.0,
+                    "bU": 1.3,
+                    "mU": [
+                        0.5,
+                        1.0,
+                        5.5
+                    ]
+                },
+                "gauss": {
+                    "ka": 0.3,
+                    "kb": 0.004,
+                    "alpha": 0.58,
+                    "beta": 0.077
+                },
+                "jimenez": {
+                    "kd": 0.17,
+                    "ad": 0.0,
+                    "bd": 0.0
+                },
+                "gauss_deflection": {
+                    "ka": 0.3,
+                    "kb": 0.004,
+                    "alpha": 0.58,
+                    "beta": 0.077,
+                    "ad": 0.0,
+                    "bd": 0.0
+                }
+            }
+        }
+    }
+}

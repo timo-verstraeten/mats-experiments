@@ -1,0 +1,66 @@
+{
+    "folder": "./results",
+    "experiments": [
+            {
+                "name": "wind",
+                "global_parameters" : [{
+                    "timesteps": 40000,
+                    "experiments": 10
+                }],
+                "algorithms" : [
+                    {
+                        "name": "rnd",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": { "seed": 1 }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "llr",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "scql",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "mauce",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {
+                                    "range": [0.05]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "thompson",
+                        "command": "../sim/run_in_venv.sh",
+                        "configs": [
+                            {
+                                "priority": 0,
+                                "parameters": {}
+                            }
+                        ]
+                    }
+                ]
+            }
+    ]
+}
