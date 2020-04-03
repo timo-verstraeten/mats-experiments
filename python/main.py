@@ -17,7 +17,7 @@ def bernoulli_chain_experiment(n_iter):
     
     # Run MATS
     mats = MultiAgentThompsonSampling(env.groups, priors)
-    total_rewards = []
+    regrets = []
     for i in range(n_iter):
         # Do step with MATS
         joint_arm = mats.pull()
@@ -25,9 +25,13 @@ def bernoulli_chain_experiment(n_iter):
         mats.update(joint_arm, local_rewards)
 
         # Logging
-        print(i, env.regret(joint_arm), '\t', joint_arm.values)
+        regret = env.regret(joint_arm)
+        regrets.append(regret)
+        print(i, regret, '\t', joint_arm.values)
 
-    plt.plot(total_rewards)
+    plt.plot(regrets)
+    plt.xlabel('Iteration')
+    plt.ylabel('Regret')
     plt.savefig(f'test_bernoulli_chain_experiment_{n_iter}.pdf')
 
 bernoulli_chain_experiment(n_iter=100)
