@@ -56,15 +56,3 @@ class Bernoulli0101Chain():
         
             means.append(mean)
         return means
-
-def test_bernoulli_chain():
-    from coordination_graph import variable_elimination
-    
-    n_agents = 10
-    env = Bernoulli0101Chain(n_agents)
-
-    # TEST: variable elimination returns the correct optimal joint arm and associated reward
-    true_optimal_arm = pd.DataFrame([i % 2 for i in range(n_agents)], index=env.agents).T
-    joint_arm = variable_elimination(env.true_means)
-    is_optimal = (joint_arm == true_optimal_arm).all(axis=1).iloc[0]
-    assert(is_optimal and sum(env.get_means(joint_arm)) == n_agents-1 and "The optimal joint action and reward returned by VE are not correct")
