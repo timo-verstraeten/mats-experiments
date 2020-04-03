@@ -5,6 +5,20 @@ import numpy as np
 import pandas as pd
 
 def variable_elimination(group_means):
+    """
+    Variable elimination for multi-agent multi-armed bandits.
+    
+    Parameters
+    ----------
+    group_means : list of pd.DataFrame
+        For every group, a data frame where the first columns are the agents' names and the last column is the mean reward (named 'mu').
+    Return
+    ------
+    pd.Series
+        Joint arm with the agent's name annotated for each entry.
+    """
+    
+    # Create coordination graph from group_means
     agents = {}  # Mapping from name to object
     reward_functions = []
     for table in group_means:
@@ -19,12 +33,13 @@ def variable_elimination(group_means):
         reward_function = RewardFunction(reward_name, table, group_agents)
         reward_functions.append(reward_function)
 
+    # Choose the agents to eliminate
     #TODO how to pick agent
     agents_ordered = list(agents.values())
     for agent in agents_ordered:
-        agent.resolve()
+        agent.resolve()  # Eliminate agent from the graph
 
-    # Maximize
+    # Find maximum joint arm that maximizes the sum of rewards
     joint_arm = pd.DataFrame()
     for agent in reversed(agents_ordered):
         joint_arm = agent.condition(joint_arm)
@@ -45,31 +60,32 @@ class RewardFunction():
         return self.name
     
     def __call__(self, joint_arm):
-        # Compute local arm used in reward function
-        local_arm = self.table.columns.drop(self.name)
-        mask = (self.table[local_arm] == joint_arm[local_arm].iloc[0]).all(axis=1)
+        # Create boolean mask to filter out the correct arm in the reward table.
+        agents = self.table.columns.drop(self.name)
+        mask = (self.table[agents] == joint_arm[agents].iloc[0]).all(axis=1)
 
-        return self.table[self.name].loc[mask].iloc[0]
+        return self.table[self.name].loc[mask].iloc[0]  # Return reward as a float
 
     def __add__(self, other):
         common_agents = list(map(str, self.agents & other.agents))
         if len(common_agents) == 0:
             raise NotImplementedError("Addition of two non-overlapping reward tables is not implemented")
         
-        # Merge two reward functions
+        # Merge two reward functions into a single new one
         name = f'{self.name}+{other.name}'
         agents = self.agents | other.agents
-        table = self.table.merge(other.table, on=common_agents, how='outer')
-        table[name] = table[[self.name, other.name]].sum(axis=1)
-        table.drop(columns=[self.name, other.name], inplace=True)
+        table = self.table.merge(other.table, on=common_agents, how='outer')  # Merge both reward tables on the common agents
+        table[name] = table[[self.name, other.name]].sum(axis=1)  # Sum both reward functions into a single one
+        table.drop(columns=[self.name, other.name], inplace=True)  # Remote old reward functions
 
         return RewardFunction(name, table, agents)
 
-    def replace_in_agents(self, new_reward_function):
+    def replace_in_agents(self, new_reward):
         for agent in self.agents:
-            agent.reward_functions.remove(self)
-            if new_reward_function not in agent.reward_functions:
-                agent.reward_functions.append(new_reward_function)
+            agent.rewards.remove(self)  # Remove the current reward function
+            if new_reward not in agent.rewards:
+                # Only add new reward function if it doesn't exist in the list of the agent yet.
+                agent.rewards.append(new_reward)  # Add the new reward function
 
     def eliminate_agent(self, agent):
         # Update table
@@ -92,7 +108,7 @@ class RewardFunction():
 class Agent():
     def __init__(self, name):
         self.name = name
-        self.reward_functions = []
+        self.rewards = []
         self.cond_policy = None
     
     def __str__(self):
@@ -100,21 +116,23 @@ class Agent():
     
     def resolve(self):
         # Create new reward function
-        new_reward_function = sum(self.reward_functions[1:], self.reward_functions[0])
+        new_reward = sum(self.rewards[1:], self.rewards[0])
         
         # Create conditional policy
-        self.cond_policy = new_reward_function.eliminate_agent(self)
+        self.cond_policy = new_reward.eliminate_agent(self)
     
         # Update neighbors
-        for reward_function in self.reward_functions:
-            reward_function.replace_in_agents(new_reward_function)
+        for reward in self.rewards:
+            reward.replace_in_agents(new_reward)
 
     def condition(self, partial_policy):
         common_agents = list(set(self.cond_policy.columns) & set(partial_policy.columns))
         if len(common_agents) == 0:
+            # If there are no common agents, just concatenate both policies
             return pd.concat([self.cond_policy, partial_policy], axis=1, sort=False)
         else:
+            # If there are common agents, merge both policies.
             return pd.merge(self.cond_policy, partial_policy, on=common_agents, how="right").dropna(0, 'any')
 
-    def add_reward_function(self, reward_func):
-        self.reward_functions.append(reward_func)
+    def add_reward_function(self, reward):
+        self.rewards.append(reward)

@@ -5,16 +5,49 @@ import pandas as pd
 import scipy as sp
 
 class ThompsonSampling():
+    """
+    Traditional Thompson sampling mechanism.
+    
+    Methods
+    -------
+    sample()
+        Sample a single value for each the mean posteriors.
+    pull()
+        Pull an arm according to the probability matching mechanism of Thompson sampling.
+    update(arm, reward)
+        Update an arm's mean posterior with a given reward.
+    """
+    
     def __init__(self, arms, priors):
+        """
+        Parameters
+        ----------
+        arms : pd.DataFrame
+            arms with entries labeled with the associated agent
+        priors : list of objects with superclass 'posteriors.Posterior'
+            prior for each arm (should be in the same order as arms)
+        """
         self._arms = arms
-        self._mean_dists = priors
+        self._posteriors = priors  # Mean posteriors
 
     def sample(self):
+        """
+        Returns
+        -------
+        list of float
+            A sample from every mean's posterior.
+        """
         theta = self._arms.copy()
-        theta['mu'] = [dist.sample() for dist in self._mean_dists]
+        theta['mu'] = [post.sample() for post in self._posteriors]
         return theta
     
     def pull(self):
+        """
+        Returns
+        -------
+        pd.Series
+            A joint arm with the agents' names as columns
+        """
         # Sample
         means = self.sample()
         
@@ -26,16 +59,51 @@ class ThompsonSampling():
         return a_max
 
     def update(self, arm, reward):
+        """
+        Parameters
+        ----------
+        arm : pd.Series
+            arm with entries labeled with the associated agent
+        reward : float
+            reward received for executing the arm
+        """
         index = np.where((self._arms == arm).all(axis=1))[0][0]
-        self._mean_dists[index].update(reward)
+        self._posteriors[index].update(reward)
 
 class MultiAgentThompsonSampling():
+    """
+    Multi-agent Thompson sampling (MATS) mechanism.
+        
+    Methods
+    -------
+    sample()
+        Sample  from the mean posteriors.
+    pull()
+        Pull a joint arm according to the probability matching mechanism of MATS.
+    update(arm, reward)
+        Update an arm's mean posterior with a given reward.
+    """
+
     def __init__(self, groups, priors):
+        """
+        Parameters
+        ----------
+        groups : list of pd.DataFrame
+            A data frame for each local group. The data frame consists of every possible local joint arm (rows) jointly over the agents (columns) within the group.
+        priors : list of list of objects with superclass 'posteriors.Posterior'
+            Each group has a list of priors, i.e., one for the mean of every local joint action.
+        """
         # Create local Thompson sampler per group
         self._groups = groups
         self._groups_samplers = [ThompsonSampling(local_arms, local_priors) for local_arms, local_priors in zip(groups, priors)]
 
     def sample(self):
+        """
+        Returns
+        -------
+        list of list of float
+            For every group, a sample from every mean's posterior.
+        """
         theta = []
         
         # Sample per group
@@ -46,6 +114,12 @@ class MultiAgentThompsonSampling():
         return theta
 
     def pull(self):
+        """
+        Returns
+        -------
+        pd.Series
+            A joint arm with the agents' names as columns
+        """
         # Sample
         group_means = self.sample()
         
@@ -55,6 +129,15 @@ class MultiAgentThompsonSampling():
         return a_max
 
     def update(self, joint_arm, local_rewards):
+        """
+        Parameters
+        ----------
+        joint_arm : pd.Series
+            arm with entries labeled with the associated agent
+        local_rewards : list of float
+            For each group, the reward received for executing the local arm
+        ----------
+        """
         for local_arms, local_sampler, local_reward in zip(self._groups, self._groups_samplers, local_rewards):
             local_sampler.update(joint_arm[local_arms.columns], local_reward)
             

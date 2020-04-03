@@ -19,13 +19,15 @@ def bernoulli_chain_experiment(n_iter):
     mats = MultiAgentThompsonSampling(env.groups, priors)
     total_rewards = []
     for i in range(n_iter):
+        # Do step with MATS
         joint_arm = mats.pull()
         local_rewards = env.execute(joint_arm)
-        total_rewards.append(sum(local_rewards))
         mats.update(joint_arm, local_rewards)
-        print(i, sum(local_rewards), '\t', joint_arm.values)
+
+        # Logging
+        print(i, env.regret(joint_arm), '\t', joint_arm.values)
 
     plt.plot(total_rewards)
-    plt.savefig('test.pdf')
+    plt.savefig(f'test_bernoulli_chain_experiment_{n_iter}.pdf')
 
 bernoulli_chain_experiment(n_iter=100)

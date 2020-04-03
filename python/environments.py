@@ -32,22 +32,30 @@ class Bernoulli0101Chain():
             means = pd.concat([group, means], axis=1, sort=False)
             self.true_means.append(means)
 
-    def get_means(self, joint_arm):
+    def regret(self, joint_arm):
+        # Compute optimal arm
+        optimal_arm = pd.Series([i % 2 for i in range(len(self.agents))], index=self.agents)
+
+        # Get true means
+        return sum(self._get_means(optimal_arm)) - sum(self._get_means(joint_arm))
+
+    def execute(self, joint_arm):
+        local_rewards = []
+        for mean in self._get_means(joint_arm):
+            # Sample random reward
+            local_rewards.append(sp.stats.bernoulli(p=mean).rvs(1)[0])
+        return local_rewards
+
+    def _get_means(self, joint_arm):
         means = []
         for local_means, group in zip(self.true_means, self.groups):
             # Get local mean associated with joint arm
             agents = group.columns
             index = (local_means[agents] == joint_arm[agents]).all(axis=1)
             mean = local_means.loc[index].drop(columns=agents).values[0,0]
+        
             means.append(mean)
         return means
-
-    def execute(self, joint_arm):
-        local_rewards = []
-        for mean in self.get_means(joint_arm):
-            # Sample random reward
-            local_rewards.append(sp.stats.bernoulli(p=mean).rvs(1)[0])
-        return local_rewards
 
 def test_bernoulli_chain():
     from coordination_graph import variable_elimination
