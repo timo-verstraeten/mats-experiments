@@ -14,17 +14,15 @@ The project requires:
 Instructions
 ------------
 
-First download the `AI-Toolbox` library via git submodules:
+This project uses a copy of the `AI-Toolbox` library, at the precise commit used
+when the paper was published. The library webpage can be found at
+`https://github.com/Svalorzen/AI-Toolbox`.  The documentation for the library
+can be found there. The SHA used by this project is
+`32f23155475491130166d8c79b01d54643e5a1d9`, but we made a minor fix for a
+compiler error.
 
-```
-git submodule update --init --recursive
-```
-
-The library webpage can be found at `https://github.com/Svalorzen/AI-Toolbox`.
-The documentation for the library can be found there.
-
-Then compile the project (please name the build folder `build` as the experiment
-running/plotting code expects it like that).
+To compile the project just run these commands (please name the build folder
+`build` as the experiment running/plotting code expects it like that):
 
 ```
 mkdir build
